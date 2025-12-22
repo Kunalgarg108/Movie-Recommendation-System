@@ -10,7 +10,6 @@ import { Routes, Route } from "react-router-dom";
 import SearchResults from "./components/SearchResults";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-
 type Movie = {
   id: number;
   title: string;
@@ -31,14 +30,7 @@ function MovieSection({ title, movies, onSelectMovie, loadingMovieId }: SectionP
 
       <h2 className="mb-2 text-2xl font-semibold pl-1">{title}</h2>
 
-      <div
-  className="
-    grid grid-cols-1 gap-2
-    sm:grid-cols-2
-    md:flex md:flex-nowrap md:gap-1
-    md:overflow-x-auto
-  "
->
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:flex md:flex-nowrap md:gap-1 md:overflow-x-auto">
         {movies.map((movie) => (
           <div
             key={movie.id}
@@ -96,7 +88,6 @@ function App() {
     if (hasFetched.current) return;
     hasFetched.current = true;
 
-    // fire immediately
     fetch(`${BASE_URL}/movies/trending`)
       .then(r => r.json())
       .then(setTrending)
@@ -109,7 +100,6 @@ function App() {
         .catch(() => setPopular([]));
     }, 800);
 
-    // fire after 1000ms
     setTimeout(() => {
       fetch(`${BASE_URL}/movies/top-rated`)
         .then(r => r.json())
@@ -126,19 +116,16 @@ function App() {
     }
 
     const controller = new AbortController();
-
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(
           `${BASE_URL}/search/autocomplete?query=${encodeURIComponent(query)}`,
           { signal: controller.signal }
         );
-
         if (!res.ok) {
           setSuggestions([]);
           return;
         }
-
         const data: string[] = await res.json();
         setSuggestions(data);
       } catch (err: any) {
@@ -153,8 +140,6 @@ function App() {
       clearTimeout(timer);
     };
   }, [query]);
-
-
 
   const fetchMovieDetails = async (id: number) => {
     if (loadingMovieId === id) return;
@@ -180,9 +165,7 @@ function App() {
           path="/"
           element={
             <>
-              {/* ================= HEADER + SEARCH ================= */}
               <div className="flex items-center mb-2 px-2 bg-gray-100 pt-0.5 pb-0.5">
-                {/* LEFT: Logo */}
                 <div className="flex items-center gap-1 flex-1">
                   <img
                     src={Logo}
@@ -193,8 +176,6 @@ function App() {
                     NextWatch
                   </h1>
                 </div>
-
-                {/* CENTER: Search */}
                 <div className="flex-[2] flex justify-center">
                   <div className="relative w-full max-w-[1100px]">
                     <input
@@ -245,8 +226,6 @@ function App() {
                 </div>
                 <div className="flex-1" />
               </div>
-
-              {/* ================= MOVIE SECTIONS ================= */}
               <div>
                 <MovieSection
                   title="Trending Movies"
@@ -279,13 +258,9 @@ function App() {
             </>
           }
         />
-
         <Route path="/search" element={<SearchResults />} />
       </Routes>
     </div>
   );
-
-
 }
-
 export default App;

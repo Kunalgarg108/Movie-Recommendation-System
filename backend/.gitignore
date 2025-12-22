@@ -1,7 +1,4 @@
 .env
 __pycache__/
-*.csv
-*.npz
-*.pkl
 *.joblib
 *.h5
