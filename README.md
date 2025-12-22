@@ -1,1 +1,86 @@
-# Movie-Recommendation-System
+# NextWatch — Movie Recommendation System
+
+NextWatch is a movie recommendation platform that combines Machine Learning, FastAPI, and a modern React UI to deliver personalized movie recommendations.
+It supports both dataset-based recommendations and real-time recommendations for movies not present in the dataset using TMDB enrichment.
+
+## 🚀 Key Features
+
+### 🔍 Smart Movie Recommendation
+
+- Recommends movies using content-based filtering
+- Uses cosine similarity on vectorized movie tags
+- Handles both Known movies (present in dataset) and External movies (fetched from TMDB and vectorized on the fly)
+
+### ⚡ High Performance Backend
+
+- Built with FastAPI
+- In-memory caching with TTL
+- CSV + TMDB hybrid data strategy to reduce API calls
+
+### 🎨 Frontend & User Experience
+
+- Modern, responsive React UI, fully optimized for mobile and desktop
+- Smart search experience with autocomplete suggestions, debounced input handling, and a results page
+- Real-time movie discovery featuring Trending, Popular, and Top-Rated movies
+
+## 🏗️ Tech Stack
+
+### Backend
+
+- FastAPI
+- Pandas
+- NumPy
+- Scikit-learn
+- NLTK
+- Joblib
+- Requests
+
+### Frontend
+
+- React (Vite)
+- Tailwind CSS
+- React Router
+- React Hot Toast
+- React Icons
+
+### External API
+
+- TMDB (The Movie Database)
+
+## 🧠 Machine Learning Workflow
+
+1️⃣ Data Loading and Feature Selection 
+2️⃣ Data Cleaning & Normalization
+3️⃣ Feature Engineering (Tag Construction)
+4️⃣ Text Preprocessing with NLTK using Porter Stemming
+5️⃣ Vectorization using CountVectorizer
+6️⃣ Similarity Computation using cosine similarity between movie vectors
+7️⃣ Recommendation Generation by Sorting top-K similar movies
+
+## 📂 Project Structure
+
+``` 
+NextWatch/
+│
+├── backend/
+│   ├── app.py               
+│   ├── recommender.py          
+│   ├── requirements.txt
+│   └── data/
+│       ├── movies_final.csv
+│       ├── tmdb_combined_with_trending.csv
+│       ├── movie_vectors.npz
+│       └── vectorizer.pkl
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── App.tsx
+│   │   ├── App.css
+│   │   └── assets/
+│   ├── .env
+│   └── vite.config.ts
+│
+└── README.md
+
+```

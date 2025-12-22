@@ -1,7 +1,9 @@
 fastapi
 uvicorn
+requests
+python-dotenv
 numpy
 pandas
 scikit-learn
 joblib
-requests
+nltk
