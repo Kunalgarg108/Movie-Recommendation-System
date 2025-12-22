@@ -49,13 +49,13 @@ It supports both dataset-based recommendations and real-time recommendations for
 
 ## 🧠 Machine Learning Workflow
 
-1️⃣ Data Loading and Feature Selection 
-2️⃣ Data Cleaning & Normalization
-3️⃣ Feature Engineering (Tag Construction)
-4️⃣ Text Preprocessing with NLTK using Porter Stemming
-5️⃣ Vectorization using CountVectorizer
-6️⃣ Similarity Computation using cosine similarity between movie vectors
-7️⃣ Recommendation Generation by Sorting top-K similar movies
+#### 1️⃣ Data Loading and Feature Selection 
+#### 2️⃣ Data Cleaning & Normalization
+#### 3️⃣ Feature Engineering (Tag Construction)
+#### 4️⃣ Text Preprocessing with NLTK using Porter Stemming
+#### 5️⃣ Vectorization using CountVectorizer
+#### 6️⃣ Similarity Computation using cosine similarity between movie vectors
+#### 7️⃣ Recommendation Generation by Sorting top-K similar movies
 
 ## 📂 Project Structure
 
