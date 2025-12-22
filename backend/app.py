@@ -11,7 +11,10 @@ app = FastAPI(title="Movie Recommendation API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -55,33 +58,42 @@ def fetch_movies(endpoint, params=None):
     response.raise_for_status()
     return response.json()["results"]
 
-
 def fetch_movies_cached(endpoint, params=None):
     if params is None:
         params = {}
 
-    cache_key = endpoint + str(params)
-    current_time = time.time()
+    cache_key = endpoint
+    now = time.time()
 
+    # Return cached data if valid
     if cache_key in CACHE:
         cached_time, cached_data = CACHE[cache_key]
-        if current_time - cached_time < CACHE_TTL:
+        if now - cached_time < CACHE_TTL:
             return cached_data
 
+    # Call TMDB only if cache missing/expired
     params["api_key"] = TMDB_API_KEY
 
-    response = requests.get(
-        f"{BASE_URL}{endpoint}",
-        params=params,
-        headers=HEADERS,
-        timeout=TIMEOUT
-    )
+    try:
+        response = requests.get(
+            f"{BASE_URL}{endpoint}",
+            params=params,
+            headers=HEADERS,
+            timeout=10
+        )
+        response.raise_for_status()
 
-    response.raise_for_status()
-    data = response.json()["results"]
+        data = response.json().get("results", [])
 
-    CACHE[cache_key] = (current_time, data)
-    return data
+        CACHE[cache_key] = (now, data)
+        return data
+
+    except Exception:
+        # fallback to old cache if TMDB fails
+        if cache_key in CACHE:
+            return CACHE[cache_key][1]
+        return []
+
 
 
 
@@ -92,19 +104,14 @@ def health():
 
 @app.get("/movies/trending")
 def trending_movies():
-    time.sleep(0.4)   # delay before TMDB call
     return fetch_movies_cached("/trending/movie/week")
-
 
 @app.get("/movies/popular")
 def popular_movies():
-    time.sleep(0.6)   # slightly longer delay
     return fetch_movies_cached("/movie/popular")
-
 
 @app.get("/movies/top-rated")
 def top_rated_movies():
-    time.sleep(0.8)   # longest delay
     return fetch_movies_cached("/movie/top_rated")
 
 @app.get("/search/autocomplete")

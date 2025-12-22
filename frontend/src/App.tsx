@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect} from "react";
 import { FiSearch } from "react-icons/fi";
 import "./App.css";
 import Card from "./components/Card";
@@ -82,32 +82,27 @@ function App() {
   const [topRated, setTopRated] = useState<Movie[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [movieDetails, setMovieDetails] = useState<any>(null);
-  const hasFetched = useRef(false);
   const navigate = useNavigate();
   useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
+    const controller = new AbortController();
 
-    fetch(`${BASE_URL}/movies/trending`)
+    fetch(`${BASE_URL}/movies/trending`, { signal: controller.signal })
       .then(r => r.json())
       .then(setTrending)
-      .catch(() => setTrending([]));
-
-    setTimeout(() => {
-      fetch(`${BASE_URL}/movies/popular`)
+      .catch(() => { });
+      
+      fetch(`${BASE_URL}/movies/top-rated`, { signal: controller.signal })
+      .then(r => r.json())
+      .then(setTopRated)
+      .catch(() => { });
+      
+      fetch(`${BASE_URL}/movies/popular`, { signal: controller.signal })
         .then(r => r.json())
         .then(setPopular)
-        .catch(() => setPopular([]));
-    }, 800);
-
-    setTimeout(() => {
-      fetch(`${BASE_URL}/movies/top-rated`)
-        .then(r => r.json())
-        .then(setTopRated)
-        .catch(() => setTopRated([]));
-    }, 400);
-
+        .catch(() => { });
+    return () => controller.abort();
   }, []);
+
 
   useEffect(() => {
     if (query.length < 2) {

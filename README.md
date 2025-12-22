@@ -57,6 +57,28 @@ It supports both dataset-based recommendations and real-time recommendations for
 6️⃣ Similarity Computation using Cosine Similarity<br>
 7️⃣ Recommendation Generation by Selecting Top-K Similar Movies
 
+## 📷 Screenshots
+
+<table>
+  <tr>
+    <td>
+      <img src="frontend/public/Image1.png" width="400"/>
+    </td>
+    <td>
+      <img src="frontend/public/Image2.png" width="400"/>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="frontend/public/Image3.png" width="400"/>
+    </td>
+    <td>
+      <img src="frontend/public/Image4.png" width="400"/>
+    </td>
+  </tr>
+</table>
+
+
 ## 📂 Project Structure
 
 ``` 
