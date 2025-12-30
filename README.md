@@ -125,7 +125,7 @@ TMDB_API_KEY=...
 cd backend
 python -m venv myenv
 source venv/bin/activate   # Linux / Mac
-venv\Scripts\activate      # Windows
+myenv\Scripts\activate      # Windows
 pip install -r requirements.txt
 uvicorn app:app --reload
 ```
