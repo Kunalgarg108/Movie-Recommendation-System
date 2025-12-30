@@ -63,14 +63,10 @@ export default function Card({ movie, onClose }: Props) {
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white w-[1100px] max-w-[98%] h-[750px] rounded-xl relative overflow-hidden flex">
-
-        {/* Close button */}
         <IoCloseSharp
           onClick={onClose}
           className="absolute top-4 right-4 text-3xl cursor-pointer text-black z-10"
         />
-
-        {/* LEFT: IMAGE (50%) */}
         <div className="hidden md:block w-1/2 relative">
           {movie.poster ? (
             <img
@@ -86,8 +82,6 @@ export default function Card({ movie, onClose }: Props) {
 
 
         </div>
-
-        {/* RIGHT: DETAILS (50%) */}
         <div className="w-full md:w-1/2 p-6 overflow-y-auto">
           <h2 className="text-3xl font-bold mb-2">{movie.title}</h2>
 
@@ -106,16 +100,12 @@ export default function Card({ movie, onClose }: Props) {
             <strong>Runtime:</strong>{" "}
             {movie.runtime ? `${movie.runtime} minutes` : "N/A"}
           </p>
-
-
           <strong>Overview:</strong>
           <p className="mb-2 leading-relaxed text-gray-800">
             {movie.overview}
           </p>
           <div className="mb-2">
             <p className="font-semibold mb-1">Rating</p>
-
-            {/* Stars */}
             <div className="relative inline-block text-gray-300 text-xl leading-none">
               ★★★★★
               <div
@@ -125,27 +115,22 @@ export default function Card({ movie, onClose }: Props) {
                 ★★★★★
               </div>
             </div>
-
-            {/* Numeric rating */}
             <span className="text-sm text-gray-600 mt-1 ml-2">
               {typeof movie.rating === "number" && movie.rating !== 0
                 ? `${movie.rating.toFixed(1)} / 10`
                 : "N/A"}
             </span>
           </div>
-
-
-
           <h4 className="font-semibold">Genres</h4>
           <p className="text-sm mb-2">
             {Array.isArray(movie.genres) && movie.genres.length > 0
               ? movie.genres
                 .map((g) => {
-                  // case 1: object { name }
+                
                   if (typeof g === "object" && g !== null && "name" in g) {
                     return g.name;
                   }
-                  // case 2: string "Action"
+                
                   if (typeof g === "string") {
                     return g;
                   }
@@ -155,8 +140,6 @@ export default function Card({ movie, onClose }: Props) {
                 .join(", ")
               : "Not available"}
           </p>
-
-
           <h4 className="font-semibold">Cast</h4>
           <div className="text-sm mb-2">
             {loadingCredits ? (
@@ -197,11 +180,8 @@ export default function Card({ movie, onClose }: Props) {
               "Not available"
             )}
           </div>
-
-
         </div>
       </div>
     </div>
   );
-
 }

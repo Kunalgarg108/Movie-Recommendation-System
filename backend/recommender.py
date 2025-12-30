@@ -15,31 +15,22 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ==============================
-# Load data ONCE at startup
-# ==============================
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 BASE_URL = "https://api.themoviedb.org/3"
 
-movies_ml = pd.read_csv("data/movies_final.csv")   # movie_id, title, tags
+movies_ml = pd.read_csv("data/movies_final.csv")   
 movies_tmdb = pd.read_csv("data/tmdb_combined_with_trending.csv")
 
-# Normalize titles for matching
 movies_tmdb["title_lower"] = movies_tmdb["title"].str.lower()
 movies_tmdb = movies_tmdb.set_index("title_lower")
 
 vectors = np.load("data/movie_vectors.npz")["vector"]
 vectorizer = joblib.load("data/vectorizer.pkl")
 
-# Map title → index (for known movie search)
 title_to_idx = {
     title.lower(): idx
     for idx, title in enumerate(movies_ml["title"])
 }
-
-# ==============================
-# Text preprocessing
-# ==============================
 
 ps = PorterStemmer()
 
@@ -49,13 +40,8 @@ def clean_and_stem(text: str) -> str:
     text = re.sub(r"\s+", " ", text)
     return " ".join(ps.stem(w) for w in text.split())
 
-# ==============================
-# TMDB enrichment (TITLE BASED)
-# ==============================
-
 def enrich_with_tmdb(movie_indices):
     results = []
-
     for idx in movie_indices:
         title = movies_ml.iloc[idx]["title"]
         key = title.lower()
@@ -72,7 +58,6 @@ def enrich_with_tmdb(movie_indices):
                 "genres": row.get("genres"),
             })
         else:
-            # No TMDB data found
             results.append({
                 "id": int(movies_ml.iloc[idx]["movie_id"]),
                 "title": title,
@@ -80,10 +65,6 @@ def enrich_with_tmdb(movie_indices):
             })
 
     return results
-
-# ==============================
-# Known movie recommendation
-# ==============================
 
 def recommend_known_movie(title: str, k: int):
     idx = title_to_idx.get(title.lower())
@@ -98,9 +79,6 @@ def recommend_known_movie(title: str, k: int):
     similar_idx = np.argsort(sims)[::-1][1:k+1]
     return enrich_with_tmdb(similar_idx)
 
-# ==============================
-# External movie recommendation
-# ==============================
 
 def recommend_external_movie(title: str, k: int):
     # 1. Fetch movie from TMDB
@@ -126,13 +104,6 @@ def recommend_external_movie(title: str, k: int):
     # 6. Enrich dataset movies with TMDB info
     return enrich_with_tmdb(similar_idx)
 
-
-
-
-# ==============================
-# TMDB fetch helpers
-# ==============================
-
 import time
 
 def fetch_external_movie(title: str, retries=3):
@@ -144,13 +115,11 @@ def fetch_external_movie(title: str, retries=3):
                 "api_key": TMDB_API_KEY,
                 "query": title
             }
-
             res = requests.get(
                 search_url,
                 params=params,
                 timeout=10,
             )
-
             if res.status_code != 200:
                 raise Exception("TMDB search failed")
 
@@ -179,11 +148,9 @@ def fetch_external_movie(title: str, retries=3):
 
         except Exception as e:
             print(f"TMDB attempt {attempt+1} failed:", e)
-            time.sleep(0.5)   # wait before retry
+            time.sleep(0.5)   
 
     return None
-
-
 
 def build_tags_from_tmdb(movie: dict) -> str:
     overview = movie.get("overview", "")
@@ -191,20 +158,16 @@ def build_tags_from_tmdb(movie: dict) -> str:
     genres = " ".join(
         g["name"] for g in movie.get("genres", [])
     )
-
     keywords = " ".join(
         k["name"] for k in movie.get("keywords", {}).get("keywords", [])
     )
-
     cast = " ".join(
         c["name"] for c in movie.get("credits", {}).get("cast", [])[:6]
     )
-
     IMPORTANT_JOBS = {"Director", "Writer", "Producer", "Screenplay"}
     crew = " ".join(
         c["name"] for c in movie.get("credits", {}).get("crew", [])
         if c["job"] in IMPORTANT_JOBS
     )
-
     tags = f"{overview} {genres} {keywords} {cast} {crew}"
     return tags

@@ -21,40 +21,29 @@ app.add_middleware(
 )
 
 load_dotenv()
-
 movies_tmdb = pd.read_csv("data/tmdb_combined_with_trending.csv")
 movies_tmdb = movies_tmdb.set_index("id")
-
-
 HEADERS = {
     "Accept": "application/json",
     "User-Agent": "Mozilla/5.0"
 }
-
 TIMEOUT = 3
-
-
 CACHE = {}
-CACHE_TTL = 21600  # 6 hours
-
-
+CACHE_TTL = 21600  
 
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 BASE_URL = "https://api.themoviedb.org/3"
-
 def fetch_movies(endpoint, params=None):
     if params is None:
         params = {}
 
     params["api_key"] = TMDB_API_KEY
-
     response = requests.get(
         f"{BASE_URL}{endpoint}",
         params=params,
         headers=HEADERS,
         timeout=TIMEOUT
     )
-
     response.raise_for_status()
     return response.json()["results"]
 
@@ -64,16 +53,11 @@ def fetch_movies_cached(endpoint, params=None):
 
     cache_key = endpoint
     now = time.time()
-
-    # Return cached data if valid
     if cache_key in CACHE:
         cached_time, cached_data = CACHE[cache_key]
         if now - cached_time < CACHE_TTL:
             return cached_data
-
-    # Call TMDB only if cache missing/expired
     params["api_key"] = TMDB_API_KEY
-
     try:
         response = requests.get(
             f"{BASE_URL}{endpoint}",
@@ -82,25 +66,18 @@ def fetch_movies_cached(endpoint, params=None):
             timeout=10
         )
         response.raise_for_status()
-
         data = response.json().get("results", [])
-
         CACHE[cache_key] = (now, data)
         return data
 
     except Exception:
-        # fallback to old cache if TMDB fails
         if cache_key in CACHE:
             return CACHE[cache_key][1]
         return []
 
-
-
-
 @app.get("/")
 def health():
     return {"status": "ok"}
-
 
 @app.get("/movies/trending")
 def trending_movies():
@@ -124,14 +101,12 @@ def autocomplete_local(query: str = Query(..., min_length=2)):
         .str.lower()
         .str.startswith(q)
     ]
-
     return (
         matches
         .sort_values("vote_average", ascending=False)
         .head(7)["title"]
         .tolist()
     )
-
 
 @app.get("/recommend")
 def recommend(title: str, k: int = 10):
@@ -150,10 +125,7 @@ def recommend(title: str, k: int = 10):
     
 @app.get("/movies/{tmdb_id}")
 def movie_details(tmdb_id: int):
-
     IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
-
-    # ---------- 1. CHECK CSV FIRST ----------
     if tmdb_id in movies_tmdb.index:
         row = movies_tmdb.loc[tmdb_id]
         def safe_json(val):
@@ -179,11 +151,10 @@ def movie_details(tmdb_id: int):
                 if pd.notna(row["poster_path"])
                 else None
             ),
-            "cast": safe_json(row["cast"])[:6],   # limit cast
+            "cast": safe_json(row["cast"])[:6],  
             "crew": safe_json(row["crew"])[:3],
         }
 
-    # ---------- 2. FALLBACK TO TMDB API ----------
     try:
         res = requests.get(
             f"{BASE_URL}/movie/{tmdb_id}",
@@ -221,7 +192,6 @@ def movie_details(tmdb_id: int):
 @app.get("/movies/{tmdb_id}/credits")
 def movie_credits(tmdb_id: int):
 
-    # ---------- 1. ALREADY SENT VIA /movies/{id} ----------
     if tmdb_id in movies_tmdb.index:
         row = movies_tmdb.loc[tmdb_id]
         def safe_json(val):
@@ -243,19 +213,17 @@ def movie_credits(tmdb_id: int):
         ]
 
         crew_list = safe_json(row["crew"])
-
         important_crew = [
             c for c in crew_list
             if c.get("job") in IMPORTANT_CREW_JOBS
         ]
 
         return {
-            "cast": safe_json(row["cast"])[:6],   # top 6 cast
-            "crew": important_crew[:4],           # top 4 important crew
+            "cast": safe_json(row["cast"])[:6],   
+            "crew": important_crew[:4],           
             "source": "cache"
         }
 
-    # ---------- 2. FALLBACK TO TMDB ----------
     try:
         res = requests.get(
             f"{BASE_URL}/movie/{tmdb_id}/credits",
@@ -264,9 +232,7 @@ def movie_credits(tmdb_id: int):
             timeout=5
         )
         res.raise_for_status()
-
         credits = res.json()
-
         return {
             "cast": [
                 {"name": c["name"], "character": c["character"]}
@@ -279,7 +245,6 @@ def movie_credits(tmdb_id: int):
             ],
             "source": "tmdb"
         }
-
     except requests.exceptions.RequestException:
         raise HTTPException(
             status_code=502,

@@ -82,12 +82,13 @@ It supports both dataset-based recommendations and real-time recommendations for
 ## 📂 Project Structure
 
 ``` 
-NextWatch/
+Movie-Recommendation-System/
 │
 ├── backend/
 │   ├── app.py               
 │   ├── recommender.py          
 │   ├── requirements.txt
+│   ├── .env
 │   └── data/
 │       ├── movies_final.csv
 │       ├── tmdb_combined_with_trending.csv
@@ -104,5 +105,37 @@ NextWatch/
 │   └── vite.config.ts
 │
 └── README.md
+```
 
+## 🔧 Installation & Setup
+### Clone the Repository
+
+```bash
+git clone https://github.com/Kunalgarg108/Movie-Recommendation-System.git
+cd Movie-Recommendation-System
+```
+
+### Backend Setup
+```.env
+TMDB_API_KEY=...
+```
+
+```bash
+cd backend
+python -m venv myenv
+source venv/bin/activate   # Linux / Mac
+venv\Scripts\activate      # Windows
+pip install -r requirements.txt
+uvicorn app:app --reload
+```
+
+### Frontend Setup
+```.env
+VITE_BACKEND_URL=...
+```
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
