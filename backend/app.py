@@ -119,7 +119,6 @@ def recommend(title: str, k: int = 10):
         return {"source": "external", "recommendations": result}
 
     except Exception as e:
-        print("ERROR:", e)
         return {"error": str(e)}
 
     

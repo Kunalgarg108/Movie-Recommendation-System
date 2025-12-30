@@ -147,7 +147,6 @@ def fetch_external_movie(title: str, retries=3):
             return detail.json()
 
         except Exception as e:
-            print(f"TMDB attempt {attempt+1} failed:", e)
             time.sleep(0.5)   
 
     return None

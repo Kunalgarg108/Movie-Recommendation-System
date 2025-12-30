@@ -1,6 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+type CastMember = {
+  name: string;
+  character?: string;
+};
+
+type CrewMember = {
+  name: string;
+  job: string;
+};
+
+type Genre = string | { name: string };
+
 type MovieDetails = {
   id: number;
   title: string;
@@ -8,10 +21,8 @@ type MovieDetails = {
   rating: number;
   runtime: number;
   release_date: string;
-  genres: string[];
+  genres: Genre[];
   poster: string | null;
-  cast: { name: string }[];
-  crew: { name: string; job: string }[];
 };
 
 function SkeletonLine() {
@@ -27,10 +38,9 @@ type Props = {
 
 
 export default function Card({ movie, onClose }: Props) {
-  const [cast, setCast] = useState<any[]>([]);
-  const [crew, setCrew] = useState<any[]>([]);
+  const [cast, setCast] = useState<CastMember[]>([]);
+  const [crew, setCrew] = useState<CrewMember[]>([]);
   const [loadingCredits, setLoadingCredits] = useState(true);
-
   const fetchedRef = useRef<number | null>(null);
   
   useEffect(() => {
