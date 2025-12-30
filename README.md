@@ -116,7 +116,8 @@ cd Movie-Recommendation-System
 ```
 
 ### Backend Setup
-```.env
+```
+.env
 TMDB_API_KEY=...
 ```
 
@@ -130,7 +131,8 @@ uvicorn app:app --reload
 ```
 
 ### Frontend Setup
-```.env
+```
+.env
 VITE_BACKEND_URL=...
 ```
 
